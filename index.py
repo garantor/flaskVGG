@@ -9,7 +9,6 @@ api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI']= 'sqlite:///vgg.db'
 db = SQLAlchemy(app)
 
-# user = db.Table('Users', db.metadata, autoload=True, autoload_with=db.engine)
 
 
 class Users(db.Model):
@@ -37,6 +36,10 @@ class Actions(db.Model):
     description = db.Column(db.String(200), nullable=False)
     note = db.Column(db.String(100), nullable=False)
 
+    def __repr__(self):
+        return f"Actions('{self.project_id}', '{self.description}')"
+
+
 
 
 class RegUsers(Resource):
@@ -58,7 +61,7 @@ class authenticate(Resource):
         if status:
             ad = secrets.token_hex(16)
             return jsonify({
-                'message':'User Found'
+                'message':'User Found',
                 'token':ad,
                 'status_code':200,
                 
@@ -68,17 +71,122 @@ class authenticate(Resource):
 
 
 
+class CreateProjects(Resource):
+    def post(self, name, desc, completed):
+        check =Projects.query.filter_by(name=name).first()
+        try:
+            projectName=check.name
+            if name == projectName:
+                return jsonify({
+                    'message':'Projects all Created',
+                    'status_code':401})
+            else:
+                pass
+        except AttributeError as NoneType:
+            newProjects = Projects(name=name, description=desc, completed=completed)
+            db.session.add(newProjects)
+            db.session.commit()
+            return jsonify({
+                'message':f'Projects {name} has been added',
+                'status_code': 200,
+            })
 
+class AllProjects(Resource):
+    def get(self):
+        allProjects = Projects.query.all()
+        ad = allProjects
+        print(ad)
+        for a in ad:
+            allnames = a.name
+            print(a)
+            print(allnames)
+            return jsonify({
+                'names': allnames
+            }) 
+     
+class GetById(Resource):
+    def get(self, projectId):
+        check =Projects.query.filter_by(id=projectId).first()
+        if check:
+            return jsonify({
+                    'projectName':check.name,
+                    'PorjectDescription': check.description
+                })
+
+
+class updateProject(Resource):
+    def put(self, projectId, name, desc, status):
+        
+        try:
+            check = Projects.query.filter_by(id=projectId).first()
+            checkId = check.id
+            if projectId == checkId:
+                check.name = name
+                check.description= desc
+                check.completed=status
+                db.session.commit()
+                return jsonify({
+                    'message': 'Projects Updated',
+                    'status_code': 200
+                })
+        except AttributeError as NoneType:
+            return jsonify({
+                'Error': 'Bad Id',
+                'Status': 401
+            })
+
+class patchProject(Resource):
+    def patch(self, projectId, name, desc, status):
+            try:
+                check = Projects.query.filter_by(id=projectId).first()
+                checkId = check.id
+                if projectId == checkId:
+                    check.name = name
+                    check.description= desc
+                    check.completed=status
+                    db.session.commit()
+                    return jsonify({
+                        'message': 'Projects Updated',
+                        'status_code': 200
+                    })
+            except AttributeError as NoneType:
+                return jsonify({
+                    'Error': 'Bad Id',
+                    'Status': 401
+                })
+class deleteProject(Resource):
+    def delete(self, projectId):
+        try:
+            check = Projects.query.filter_by(id=projectId).first()
+            newId = check.id
+            if projectId == newId:
+                Projects.query.filter_by(id=projectId).delete()
+                db.session.commit()
+                return jsonify({
+                            'message': 'Projects Updated',
+                            'status_code': 200
+                        })
+        except AttributeError as NoneType:
+            return jsonify({
+                    'Error': 'Bad Id',
+                    'Status': 401
+                })
 
 @app.route('/')
 def indexpage():
     return jsonify({'test':'Hello world'})
 
 
-
+api.add_resource(deleteProject, '/api/projects/<int:projectId>')
+api.add_resource(patchProject, '/api/projects/<int:projectId>/<string:name>/<string:desc>/<int:status>')
+api.add_resource(updateProject, '/api/projects/<int:projectId>/<string:name>/<string:desc>/<int:status>')
+api.add_resource(GetById, '/api/projects/<string:projectId>')
+api.add_resource(AllProjects, '/api/projects')
+api.add_resource(CreateProjects, '/api/projects/<string:name>/<string:desc>/<int:completed>')
 api.add_resource(authenticate,'/api/users/auth/<string:username>/<string:password>')
 api.add_resource(RegUsers, '/api/users/register/<string:username>/<string:password>')
 
 
 if __name__ == "__main__":
     app.run(debug=True)
+# get all project no working yet
