@@ -1,12 +1,14 @@
 from flask import Flask, jsonify
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, reqparse
 from flask_sqlalchemy import SQLAlchemy
+import secrets
 
 
 app = Flask(__name__)
 api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI']= 'sqlite:///vgg.db'
 db = SQLAlchemy(app)
+
 # user = db.Table('Users', db.metadata, autoload=True, autoload_with=db.engine)
 
 
@@ -38,22 +40,33 @@ class Actions(db.Model):
 
 
 class RegUsers(Resource):
-    def get(self, username, password):
-        print(username, password)
-        name = username
-        pasw = password
-        check = Users.query.filter_by(username=name).first()
+    def post(self,username, password):
+
+        check = Users.query.filter_by(username=username).first()
         if check:
             return jsonify({'message':'This Users already exists', 'status_code':400})
         else:
-            adf = Users(username=name, password=pasw)
+            adf = Users(username=username, password=password)
             db.session.add(adf)
             db.session.commit()
             return jsonify({'users':username, 'status_code':200, 'message':'User Added'})
 
 
 class authenticate(Resource):
-    pass 
+    def post(self, username, password):
+        status = Users.query.filter_by(username=username, password=password).first()
+        if status:
+            ad = secrets.token_hex(16)
+            return jsonify({
+                'message':'User Found'
+                'token':ad,
+                'status_code':200,
+                
+            })
+        else:
+            return jsonify({'users':username, 'status_code':400, 'message':'User not found'})
+
+
 
 
 
@@ -61,12 +74,9 @@ class authenticate(Resource):
 def indexpage():
     return jsonify({'test':'Hello world'})
 
-@app.route('/api/v1/users',methods=['GET'])
-def get_user():
-    return jsonify({"users":db.session.query(user).all()})
 
 
-
+api.add_resource(authenticate,'/api/users/auth/<string:username>/<string:password>')
 api.add_resource(RegUsers, '/api/users/register/<string:username>/<string:password>')
 
 
