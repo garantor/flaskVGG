@@ -1,4 +1,22 @@
-# Please Ignore
+from flask import Flask
+from flask import jsonify
+from flask_restful import Resource, Api, reqparse
+from flask_sqlalchemy import SQLAlchemy
+from marshmallow import Schema, fields
+
+
+
+
+
+app = Flask(__name__)
+api = Api(app)
+app.config['SQLALCHEMY_DATABASE_URI']= 'sqlite:///vgg.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS']= False
+db = SQLAlchemy(app)
+
+parser = reqparse.RequestParser()
+
+
 
 
 #===============================================================================
@@ -52,3 +70,8 @@ class ActionsSchema(Schema):
     project_id = fields.Integer()
     description = fields.Str()
     note = fields.Str()
+
+class projectSchema(Schema):
+    name = fields.Str()
+    description = fields.Str()
+    completed = fields.Boolean()
