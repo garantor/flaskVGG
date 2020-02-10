@@ -300,13 +300,12 @@ class deleteActions(Resource): # Class to delete actions
                 })
 
 
-
 @app.route('/')  #Welcome route
 def indexpage():
     return jsonify({'test':'Hello world'})
 
 
-api.add_resource(deleteActions, '/api/projects/<int:projectId>/actions/<int:actionId>')
+api.add_resource(deleteActions, '/api/projects/<int:projectId>/actions/<int:actionId>') # Delete an action that belog to a project by ID
 api.add_resource(putSingle, '/api/projects/<int:projectId>/actions/<int:actionId>' ) #Put/Update a project particular Action by it id
 api.add_resource(SingleActionByID, '/api/projects/<int:projectId>/actions/<int:actionId>') # Get a single action by ID
 api.add_resource(GetAction, '/api/actions/<int:actionId>') # Get a single action by action Id
@@ -325,5 +324,3 @@ api.add_resource(RegUsers, '/api/users/register/') # Register New Users
 
 if __name__ == "__main__":
     app.run(debug=True)
-# get all project no working yet, serilazations
-# get all actions not working serilazatuon
