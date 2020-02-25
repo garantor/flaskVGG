@@ -26,6 +26,11 @@
 * Delete an action that belong to a project using action ID
 
 ---
+# STATUS CODE AND MEANING
+* 400 - Bad Request User/Project already exist
+* 200 - Successful
+* 402 - Bad id request
+
 
 # REQUIREMENT
 * aniso8601==8.0.0

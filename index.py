@@ -21,7 +21,8 @@ class RegUsers(Resource): # Create Users Class
             db.session.commit()
             return jsonify({
                 'username':username,
-                'status': 'add successfully'
+                'status': 'add successfully',
+                'status_code':200
             })
 
 
@@ -43,7 +44,7 @@ class authenticate(Resource): #Authenticate and send secret token after authenti
                 
             })
         else:
-            return jsonify({'users':username, 'status_code':400, 'message':'User not found'})
+            return jsonify({'users':username, 'status_code':402, 'message':'User not found'})
 
 
 
@@ -62,7 +63,7 @@ class CreateProjects(Resource): # Create project Class
             if username == projectName:
                 return jsonify({
                     'message':'Projects already Created',
-                    'status_code':401})
+                    'status_code':400})
             else:
                 pass
         except AttributeError as NoneType:
@@ -91,8 +92,16 @@ class GetById(Resource): # Get a specific project by it Id
                     'PorjectDescription': check.description
                 })
 
+        elif check == None:
+            return jsonify({
+                "message":"This id is not found or incorrect",
+                "status_code": 402
+            })
+        else:
+            pass
 
-class updateProject(Resource): #Update a specific project
+
+class updateProject(Resource): #Update a specific project by id
     def put(self, projectId):
         parser.add_argument('name', required=True, type=str)
         parser.add_argument('description', required=True, type=str)
@@ -115,8 +124,8 @@ class updateProject(Resource): #Update a specific project
                 })
         except AttributeError as NoneType:
             return jsonify({
-                'Error': 'Bad Id',
-                'Status': 401
+                'Error': 'Bad Id, project not found',
+                'Status': 402
             })
 
 class patchProject(Resource): #Patch project/Update
@@ -142,8 +151,8 @@ class patchProject(Resource): #Patch project/Update
                     })
         except AttributeError as NoneType:
             return jsonify({
-                    'Error': 'Bad Id',
-                    'Status': 401
+                    'Error': 'Bad Id, project not Found',
+                    'Status': 402
                 })
 
 class deleteProject(Resource): #Delete a specific project when given it Id
@@ -155,16 +164,16 @@ class deleteProject(Resource): #Delete a specific project when given it Id
                 Projects.query.filter_by(id=projectId).delete()
                 db.session.commit()
                 return jsonify({
-                            'message': 'Projects Updated',
+                            'message': 'Projects Deleted',
                             'status_code': 200
                         })
         except AttributeError as NoneType:
             return jsonify({
-                    'Error': 'Bad Id',
-                    'Status': 401
+                    'Error': 'Bad Id, project not found',
+                    'Status': 402
                 })
 
-class createActionProject(Resource): # Create Action
+class createActionProject(Resource): # Create Action under a project
     def post(self, ProjectId):
         parser.add_argument('description', required=True, help=None)
         parser.add_argument('note', required=True)
@@ -183,14 +192,15 @@ class createActionProject(Resource): # Create Action
                                 'status_code': 200
                             })
             else:
+                print(check.id)
                 return jsonify({
                     'Error': 'Project Not Found'
                 })
 
         except AttributeError as NoneType:
             return jsonify({
-                    'Error': 'Bad Id',
-                    'Status': 401
+                    'Error': 'Bad Id, Project or Action Id not found',
+                    'Status': 402
                 })
 
 class GetActionsAll(Resource): # Return list of all actions when query
@@ -212,8 +222,8 @@ class ProjectsAllActions(Resource): # Return all action that belong to a specifi
 
         except AttributeError as NoneType:
             return jsonify({
-                    'Error': 'Bad Id',
-                    'Status': 401
+                    'Error': 'Bad Id, project not found',
+                    'Status': 402
                 })
 
 class GetAction(Resource): #Get a specific action by it Id
@@ -227,8 +237,8 @@ class GetAction(Resource): #Get a specific action by it Id
             })
         else:
             return jsonify({
-                    'Error': 'Bad Id',
-                    'Status': 401
+                    'Error': 'Bad Id, action not Found',
+                    'Status': 402
                 })
 
 
@@ -264,22 +274,25 @@ class putSingle(Resource): #Put class to add to an action that belongs to an Id
 
             else:
                 return jsonify({
-                    'Error':'Project id Not found',
-                    'Status code ': 401
+                    'Error':'Bad Id, Project id Not found',
+                    'Status code ': 402
                 })
         except AttributeError as NoneType:
             return jsonify({
-                    'Error': 'Bad Id',
-                    'Status': 401
+                    'Error': 'Bad Id, Action Id is incorrect',
+                    'Status': 402
                 })
 
 class deleteActions(Resource): # Class to delete actions
     def delete(self, projectId, actionId):
         try:
             check = Projects.query.filter_by(id=projectId).first()
-            act = Actions.query.filter_by(id=projectId).first()
+            print(check.id)
+            act = Actions.query.filter_by(id=actionId).first()
+            print(act)
             newId = check.id
             newAct = act.id
+            print(newId, newAct)
             if projectId == newId and actionId == newAct :
                 Actions.query.filter_by(id=actionId).delete()
                 db.session.commit()
@@ -290,13 +303,13 @@ class deleteActions(Resource): # Class to delete actions
 
             else:
                 return jsonify({
-                    'Error': 'Bad  action Id',
-                    'Status': 401
+                    'Error': 'Bad Id, action Id not found',
+                    'Status': 402
                 })
         except AttributeError as NoneType:
             return jsonify({
-                    'Error': 'Bad Id',
-                    'Status': 401
+                    'Error': 'Bad Id, Project id not found',
+                    'Status': 402
                 })
 
 
@@ -305,7 +318,7 @@ def indexpage():
     return jsonify({'test':'Hello world'})
 
 
-api.add_resource(deleteActions, '/api/projects/<int:projectId>/actions/<int:actionId>') # Delete an action that belog to a project by ID
+api.add_resource(deleteActions, '/api/projects/<int:projectId>/actions/<int:actionId>') # Delete an action that belong to a project by action ID
 api.add_resource(putSingle, '/api/projects/<int:projectId>/actions/<int:actionId>' ) #Put/Update a project particular Action by it id
 api.add_resource(SingleActionByID, '/api/projects/<int:projectId>/actions/<int:actionId>') # Get a single action by ID
 api.add_resource(GetAction, '/api/actions/<int:actionId>') # Get a single action by action Id
