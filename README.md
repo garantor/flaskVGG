@@ -14,7 +14,7 @@
 * Create Users using a POST request
 * Create a Project Using a POST Request
 * Create Actions using a POST Request
-* Authrnticate users and generate token
+* Authenticate users and generate token
 * Get all Projects Using a GET Request
 * Get a project by id
 * Update an existing project using a PUT Request
