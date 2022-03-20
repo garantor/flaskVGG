@@ -22,7 +22,7 @@
 * Delete a project using DELETE
 * Create actions using POST
 * Get list of all Actions using GET
-* Get a sing action by it ID
+* Get a single action by it ID
 * Delete an action that belong to a project using action ID
 
 ---
