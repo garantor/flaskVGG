@@ -56,6 +56,12 @@
 ![](004.png)
 ![](005.png)
 
+# TESTING THE APP
+- clone the repo
+- create a virtual environment
+- activate your virtual environment
+- pip install -r requirements.txt
+- python index.py
 
 # CONCLUSION
 ## Dont forget to test it out on [HEROKU](https://apichalleng.herokuapp.com/)
