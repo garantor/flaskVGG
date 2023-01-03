@@ -5,11 +5,6 @@ from flask_sqlalchemy import SQLAlchemy
 from marshmallow import Schema, fields
 from decouple import config as env_getter
 
-print(env_getter("AWS_DB_USER"))
-
-
-
-# 'mysql+pymysql://admin:6qDPd3wzDWjO1qadHXDn@flaskvgg-db.csur2f5tydrq.us-east-1.rds.amazonaws.com:3306/flaskvgg-db'
 
 app = Flask(__name__)
 api = Api(app)
