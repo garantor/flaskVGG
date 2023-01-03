@@ -2,7 +2,7 @@
 
 ---
 
-## This is an api created using flask_restful with python to manage Projects and Actions feel free to test it out on [HEROKU](https://apichalleng.herokuapp.com/)
+## This is an api created using flask_restful with python to manage Projects and Actions feel free to test it out on [HEROKU](https://h0rgukoya2.execute-api.us-east-1.amazonaws.com/dev)
 > Challenge Description:
 > In this challenge, you design and create a web API to manage the following
 > resources: Projects and Actions.
