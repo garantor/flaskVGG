@@ -1,0 +1,10 @@
+{
+    "dev": {
+        "app_function": "index.app",
+        "profile_name": "default",
+        "project_name": "flaskvgg",
+        "runtime": "python3.9",
+        "s3_bucket": "zappa-cd5f0ih4p",
+        "aws_region": "us-east-1"
+    }
+}
