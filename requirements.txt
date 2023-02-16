@@ -35,5 +35,5 @@ toml==0.10.2
 tqdm==4.64.1
 troposphere==4.2.0
 urllib3==1.26.13
-Werkzeug==1.0.0
+Werkzeug==2.2.3
 zappa==0.56.1
